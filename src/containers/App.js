@@ -6,7 +6,7 @@ import CardList from '../components/CardList';
 import ErrorBoundary from '../components/ErrorBoundary';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
-import { setSearchField } from '../actions';
+import { changeSearchField } from '../actions';
 
 
 class App extends Component {
@@ -28,7 +28,7 @@ class App extends Component {
     render() {
         const { robots } = this.state
         const { searchField, onSearchChange } = this.props
-        
+
         const filteredRobots = robots.filter(robot => (
             robot.name.toLowerCase().includes(searchField.toLowerCase())
         ))
@@ -57,7 +57,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onSearchChange: (event) => dispatch(setSearchField(event.target.value))
+        onSearchChange: (event) => dispatch(changeSearchField(event.target.value))
     }
 }
 
