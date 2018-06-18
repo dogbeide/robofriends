@@ -6,34 +6,28 @@ import CardList from '../components/CardList';
 import ErrorBoundary from '../components/ErrorBoundary';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
-import { changeSearchField } from '../actions';
+import { changeSearchField, getRobots } from '../actions';
 
 
 class App extends Component {
-    constructor() {
-        super()
-        this.state = {
-            robots: []
-        };
-    }
 
     componentDidMount() {
-        fetch('https://jsonplaceholder.typicode.com/users')
-            .then(response => response.json())
-            .then(users => {
-                this.setState({ robots: users })
-            });
+        this.props.onGetRobots()
     }
     
     render() {
-        const { robots } = this.state
-        const { searchField, onSearchChange } = this.props
+        const {
+            isPending,
+            onSearchChange,
+            robots,
+            searchField
+        } = this.props
 
         const filteredRobots = robots.filter(robot => (
             robot.name.toLowerCase().includes(searchField.toLowerCase())
         ))
 
-        return !robots.length ? (
+        return isPending? (
             <img src="loading.gif" alt="Loading..."/>
         ) : (
             <div className="tc">
@@ -51,13 +45,17 @@ class App extends Component {
 
 const mapStateToProps = state => {
     return {
-        searchField: state.searchField
+        searchField: state.searchRobots.searchField,
+        robots: state.getRobots.robots,
+        isPending: state.getRobots.isPending,
+        error: state.getRobots.error
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        onSearchChange: (event) => dispatch(changeSearchField(event.target.value))
+        onSearchChange: (event) => dispatch(changeSearchField(event.target.value)),
+        onGetRobots: () => dispatch(getRobots())
     }
 }
 
