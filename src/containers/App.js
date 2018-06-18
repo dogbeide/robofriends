@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+
+import './App.css';
 import CardList from '../components/CardList';
 import ErrorBoundary from '../components/ErrorBoundary';
 import SearchBox from '../components/SearchBox';
 import Scroll from '../components/Scroll';
-import './App.css';
+import { setSearchField } from '../actions';
 
 
 class App extends Component {
     constructor() {
         super()
         this.state = {
-            robots: [],
-            searchfield: ''
+            robots: []
         };
     }
 
@@ -20,17 +22,15 @@ class App extends Component {
             .then(response => response.json())
             .then(users => {
                 this.setState({ robots: users })
-            })
-    }
-
-    onSearchChange = (e) => {
-        this.setState({ searchfield: e.target.value })
+            });
     }
     
     render() {
-        const { robots, searchfield } = this.state
+        const { robots } = this.state
+        const { searchField, onSearchChange } = this.props
+        
         const filteredRobots = robots.filter(robot => (
-            robot.name.toLowerCase().includes(searchfield.toLowerCase())
+            robot.name.toLowerCase().includes(searchField.toLowerCase())
         ))
 
         return !robots.length ? (
@@ -38,7 +38,7 @@ class App extends Component {
         ) : (
             <div className="tc">
                 <h1 className="f2">Robo Friends</h1>
-                <SearchBox searchChange={this.onSearchChange} />
+                <SearchBox searchChange={onSearchChange} />
                 <Scroll>
                     <ErrorBoundary>
                         <CardList robots={filteredRobots} />
@@ -49,4 +49,16 @@ class App extends Component {
     }
 }
 
-export default App;
+const mapStateToProps = state => {
+    return {
+        searchField: state.searchField
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onSearchChange: (event) => dispatch(setSearchField(event.target.value))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
